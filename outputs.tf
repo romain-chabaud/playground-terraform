@@ -1,3 +1,3 @@
-output "app_url" {
-  value = google_cloud_run_v2_service.hello_service.uri
+output "voting_app_url" {
+  value = google_cloud_run_v2_service.voting_service.uri
 }

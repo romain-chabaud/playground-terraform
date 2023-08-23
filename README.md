@@ -2,13 +2,13 @@
 
 ## Objectives
 
-This is a simple Terraform practice exercice creating a simple Cloud Run service accessing a Postgres instance.
+This is a simple Terraform practice exercice creating a simple Cloud Run service accessing a Cloud SQL (Postgres) database. The service is launched from an image generated from this [code](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/cloud-sql/postgres/servlet).
 
 The database instance password is generated, then saved in a Secret Manager.
 
 ## Requirement
 
-Having Terraform installed
+Having `Terraform` installed
 
 ## How to create the infrastructure
 
