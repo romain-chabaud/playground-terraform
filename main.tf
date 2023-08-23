@@ -27,7 +27,7 @@ resource "google_sql_user" "voting_db_user" {
 }
 
 # instance
-resource "google_project_service" "enable_voting_instance" {
+resource "google_project_service" "enable_cloud_run" {
   service = "run.googleapis.com"
 }
 
@@ -90,7 +90,7 @@ resource "google_cloud_run_v2_service" "voting_service" {
   }
 
   depends_on = [
-    google_project_service.enable_voting_instance,
+    google_project_service.enable_cloud_run,
     google_project_service.enable_sql_admin,
     null_resource.voting_app_image_creation,
     google_secret_manager_secret_version.db_password_secret_value
