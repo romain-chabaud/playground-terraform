@@ -4,5 +4,6 @@ terraform.tfstate*
 terraform.tfvars
 
 /.vscode
+/.idea
 
-/voting-app/servlet/target
+/code/voting-app/servlet/target
