@@ -16,13 +16,9 @@ resource "google_secret_manager_secret" "voting_database_password_secret" {
   depends_on = [google_project_service.secret_manager_enabler]
 }
 
-resource "random_password" "generated_voting_database_password" {
-  length = var.voting_db_password_length >= var.min_db_password_length ? var.voting_db_password_length : var.min_db_password_length
-}
-
 resource "google_secret_manager_secret_version" "voting_database_password_secret_value" {
   secret      = google_secret_manager_secret.voting_database_password_secret.name
-  secret_data = random_password.generated_voting_database_password.result
+  secret_data = google_sql_user.voting_database_user.password
 }
 
 resource "google_secret_manager_secret_iam_member" "voting_database_password_secret_access" {
@@ -30,6 +26,10 @@ resource "google_secret_manager_secret_iam_member" "voting_database_password_sec
   role       = "roles/secretmanager.secretAccessor"
   member     = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
   depends_on = [google_secret_manager_secret.voting_database_password_secret]
+}
+
+data "google_secret_manager_secret_version_access" "latest_voting_database_password_secret_value" {
+  secret = google_secret_manager_secret_version.voting_database_password_secret_value.secret
 }
 
 # pet clinique
@@ -46,13 +46,9 @@ resource "google_secret_manager_secret" "petclinic_database_password_secret" {
   depends_on = [google_project_service.secret_manager_enabler]
 }
 
-resource "random_password" "generated_petclinic_database_password" {
-  length = var.petclinic_db_password_length >= var.min_db_password_length ? var.petclinic_db_password_length : var.min_db_password_length
-}
-
 resource "google_secret_manager_secret_version" "petclinic_database_password_secret_value" {
   secret      = google_secret_manager_secret.petclinic_database_password_secret.name
-  secret_data = random_password.generated_petclinic_database_password.result
+  secret_data = google_sql_user.petclinic_database_user.password
 }
 
 resource "google_secret_manager_secret_iam_member" "petclinic_database_password_secret_access" {
@@ -60,4 +56,8 @@ resource "google_secret_manager_secret_iam_member" "petclinic_database_password_
   role       = "roles/secretmanager.secretAccessor"
   member     = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
   depends_on = [google_secret_manager_secret.petclinic_database_password_secret]
+}
+
+data "google_secret_manager_secret_version_access" "latest_petclinic_database_password_secret_value" {
+  secret = google_secret_manager_secret_version.petclinic_database_password_secret_value.secret
 }

@@ -13,43 +13,38 @@ resource "google_project_service" "sql_admin_enabler" {
 # voting app
 resource "null_resource" "voting_app_image_creation" {
   provisioner "local-exec" {
-    command = "cd code/voting-app/servlet && mvn clean package com.google.cloud.tools:jib-maven-plugin:2.8.0:build -Dimage=gcr.io/${var.project_id}/voting-app -DskipTests"
+    command = "cd code/voting-app/servlet && mvn clean package com.google.cloud.tools:jib-maven-plugin:2.8.0:build -Dimage=${local.deployment.app.voting_app.image} -DskipTests"
   }
 
   depends_on = [google_project_service.container_registry_enabler]
 }
 
 resource "google_cloud_run_v2_service" "voting_app_instance" {
-  name     = "voting-service"
+  name     = local.deployment.app.voting_app.name
   location = var.region
 
   template {
     containers {
-      image = "gcr.io/${var.project_id}/voting-app"
+      image = local.deployment.app.voting_app.image
 
       env {
         name  = "INSTANCE_CONNECTION_NAME"
-        value = google_sql_database_instance.shared_database_instance.connection_name
+        value = local.deployment.shared_db_instance
       }
 
       env {
         name  = "DB_USER"
-        value = google_sql_user.voting_database_user.name
+        value = local.deployment.app.voting_app.db.user
       }
 
       env {
-        name = "DB_PASS"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.voting_database_password_secret.secret_id
-            version = "latest"
-          }
-        }
+        name  = "DB_PASS"
+        value = local.deployment.app.voting_app.db.password
       }
 
       env {
         name  = "DB_NAME"
-        value = google_sql_database.voting_database.name
+        value = local.deployment.app.voting_app.db.name
       }
 
       volume_mounts {
@@ -83,12 +78,12 @@ resource "google_cloud_run_v2_service_iam_member" "voting_app_instance_access" {
 
 # petclinic app
 resource "google_cloud_run_v2_service" "petclinic_app_instance" {
-  name     = "petclinic-service"
+  name     = local.deployment.app.petclinic.name
   location = var.region
 
   template {
     containers {
-      image = "chabaudromain/petclinic-cloudsql-postgres"
+      image = local.deployment.app.petclinic.image
 
       resources {
         limits = {
@@ -98,22 +93,17 @@ resource "google_cloud_run_v2_service" "petclinic_app_instance" {
 
       env {
         name  = "INSTANCE_CONNECTION_NAME"
-        value = google_sql_database_instance.shared_database_instance.connection_name
+        value = local.deployment.shared_db_instance
       }
 
       env {
         name  = "DB_USER"
-        value = google_sql_user.petclinic_database_user.name
+        value = local.deployment.app.petclinic.db.user
       }
 
       env {
-        name = "DB_PASS"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.petclinic_database_password_secret.secret_id
-            version = "latest"
-          }
-        }
+        name  = "DB_PASS"
+        value = local.deployment.app.petclinic.db.password
       }
     }
   }
