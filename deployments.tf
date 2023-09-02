@@ -1,3 +1,7 @@
+resource "google_project_service" "artifact_registry_enabler" {
+  service = "artifactregistry.googleapis.com"
+}
+
 resource "google_project_service" "cloud_run_enabler" {
   service = "run.googleapis.com"
 }
@@ -11,6 +15,8 @@ resource "google_artifact_registry_repository" "voting_repository" {
   location      = var.region
   repository_id = "voting-repository"
   format        = "DOCKER"
+
+  depends_on = [google_project_service.artifact_registry_enabler]
 }
 
 resource "null_resource" "voting_app_image_creation" {
@@ -21,7 +27,7 @@ resource "null_resource" "voting_app_image_creation" {
   depends_on = [google_artifact_registry_repository.voting_repository]
 }
 
-resource "google_cloud_run_v2_service" "voting_app_instance" {
+resource "google_cloud_run_v2_service" "voting_app_run_service" {
   name     = local.deployment.app.voting_app.name
   location = var.region
 
@@ -70,16 +76,16 @@ resource "google_cloud_run_v2_service" "voting_app_instance" {
   ]
 }
 
-resource "google_cloud_run_v2_service_iam_member" "voting_app_instance_access" {
-  project  = google_cloud_run_v2_service.voting_app_instance.project
-  location = google_cloud_run_v2_service.voting_app_instance.location
-  name     = google_cloud_run_v2_service.voting_app_instance.name
+resource "google_cloud_run_v2_service_iam_member" "voting_app_run_service_access" {
+  project  = google_cloud_run_v2_service.voting_app_run_service.project
+  location = google_cloud_run_v2_service.voting_app_run_service.location
+  name     = google_cloud_run_v2_service.voting_app_run_service.name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
 
 # petclinic app
-resource "google_cloud_run_v2_service" "petclinic_app_instance" {
+resource "google_cloud_run_v2_service" "petclinic_app_run_service" {
   name     = local.deployment.app.petclinic.name
   location = var.region
 
@@ -116,10 +122,10 @@ resource "google_cloud_run_v2_service" "petclinic_app_instance" {
   ]
 }
 
-resource "google_cloud_run_v2_service_iam_member" "petclinic_app_instance_access" {
-  project  = google_cloud_run_v2_service.petclinic_app_instance.project
-  location = google_cloud_run_v2_service.petclinic_app_instance.location
-  name     = google_cloud_run_v2_service.petclinic_app_instance.name
+resource "google_cloud_run_v2_service_iam_member" "petclinic_app_run_service_access" {
+  project  = google_cloud_run_v2_service.petclinic_app_run_service.project
+  location = google_cloud_run_v2_service.petclinic_app_run_service.location
+  name     = google_cloud_run_v2_service.petclinic_app_run_service.name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
