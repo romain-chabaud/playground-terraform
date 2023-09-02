@@ -1,7 +1,3 @@
-resource "google_project_service" "container_registry_enabler" {
-  service = "containerregistry.googleapis.com"
-}
-
 resource "google_project_service" "cloud_run_enabler" {
   service = "run.googleapis.com"
 }
@@ -11,12 +7,18 @@ resource "google_project_service" "sql_admin_enabler" {
 }
 
 # voting app
+resource "google_artifact_registry_repository" "voting_repository" {
+  location      = var.region
+  repository_id = "voting-repository"
+  format        = "DOCKER"
+}
+
 resource "null_resource" "voting_app_image_creation" {
   provisioner "local-exec" {
     command = "cd code/voting-app/servlet && mvn clean package com.google.cloud.tools:jib-maven-plugin:2.8.0:build -Dimage=${local.deployment.app.voting_app.image} -DskipTests"
   }
 
-  depends_on = [google_project_service.container_registry_enabler]
+  depends_on = [google_artifact_registry_repository.voting_repository]
 }
 
 resource "google_cloud_run_v2_service" "voting_app_instance" {

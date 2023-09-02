@@ -4,7 +4,7 @@ locals {
     app = {
       voting_app = {
         name  = "voting-service"
-        image = "gcr.io/${var.project_id}/voting-app"
+        image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.voting_repository.repository_id}/voting-app"
         db = {
           name     = google_sql_database.voting_database.name
           user     = google_sql_user.voting_database_user.name
