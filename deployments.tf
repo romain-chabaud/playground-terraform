@@ -71,8 +71,7 @@ resource "google_cloud_run_v2_service" "voting_app_run_service" {
   depends_on = [
     google_project_service.cloud_run_enabler,
     google_project_service.sql_admin_enabler,
-    null_resource.voting_app_image_creation,
-    google_secret_manager_secret_version.voting_database_password_secret_value
+    null_resource.voting_app_image_creation
   ]
 }
 
