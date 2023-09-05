@@ -20,6 +20,16 @@ module "voting_data" {
   }
 }
 
+moved {
+  from = google_sql_database.voting_database
+  to   = module.voting_data.google_sql_database.database
+}
+
+moved {
+  from = google_sql_user.voting_database_user
+  to   = module.voting_data.google_sql_user.user
+}
+
 # petclinic database
 resource "random_password" "generated_petclinic_database_password" {
   length = var.petclinic_db_password_length >= var.min_db_password_length ? var.petclinic_db_password_length : var.min_db_password_length
@@ -33,4 +43,14 @@ module "petclinic_data" {
     username = "petclinic-db-user"
     password = random_password.generated_petclinic_database_password.result
   }
+}
+
+moved {
+  from = google_sql_database.petclinic_database
+  to   = module.petclinic_data.google_sql_database.database
+}
+
+moved {
+  from = google_sql_user.petclinic_database_user
+  to   = module.petclinic_data.google_sql_user.user
 }

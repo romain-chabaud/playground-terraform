@@ -1,3 +1,7 @@
+resource "google_project_service" "secret_manager_enabler" {
+  service = "secretmanager.googleapis.com"
+}
+
 # voting secret
 module "voting_secret" {
   source = "./modules/secret"
@@ -22,6 +26,23 @@ module "voting_secret" {
     })
   }
   secret_manager_service_account = local.default_service_account
+
+  depends_on = [google_project_service.secret_manager_enabler]
+}
+
+moved {
+  from = google_secret_manager_secret.voting_database_configuration_secret
+  to   = module.voting_secret.google_secret_manager_secret.database_configuration_secret
+}
+
+moved {
+  from = google_secret_manager_secret_version.voting_database_configuration_secret_value
+  to   = module.voting_secret.google_secret_manager_secret_version.database_configuration_secret_value
+}
+
+moved {
+  from = google_secret_manager_secret_iam_member.voting_database_configuration_secret_access
+  to   = module.voting_secret.google_secret_manager_secret_iam_member.database_configuration_secret_access
 }
 
 # pet clinique
@@ -48,4 +69,21 @@ module "petclinic_secret" {
     })
   }
   secret_manager_service_account = local.default_service_account
+
+  depends_on = [google_project_service.secret_manager_enabler]
+}
+
+moved {
+  from = google_secret_manager_secret.petclinic_database_configuration_secret
+  to   = module.petclinic_secret.google_secret_manager_secret.database_configuration_secret
+}
+
+moved {
+  from = google_secret_manager_secret_version.petclinic_database_configuration_secret_value
+  to   = module.petclinic_secret.google_secret_manager_secret_version.database_configuration_secret_value
+}
+
+moved {
+  from = google_secret_manager_secret_iam_member.petclinic_database_configuration_secret_access
+  to   = module.petclinic_secret.google_secret_manager_secret_iam_member.database_configuration_secret_access
 }
