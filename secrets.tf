@@ -8,21 +8,11 @@ module "voting_secret" {
   secret_configuration = {
     name     = "voting-db-config"
     location = var.region
-    value = yamlencode({
-      spring = {
-        datasource = {
-          username = module.voting_data.database_user
-          password = module.voting_data.database_password
-        }
-        cloud = {
-          gcp = {
-            sql = {
-              database-name            = module.voting_data.database_name
-              instance-connection-name = google_sql_database_instance.shared_database_instance.connection_name
-            }
-          }
-        }
-      }
+    value = jsonencode({
+      INSTANCE_CONNECTION_NAME = google_sql_database_instance.shared_database_instance.connection_name
+      DB_NAME                  = module.voting_data.database_name
+      DB_USER                  = module.voting_data.database_user
+      DB_PASS                  = module.voting_data.database_password
     })
   }
   secret_manager_service_account = local.default_service_account
@@ -51,21 +41,11 @@ module "petclinic_secret" {
   secret_configuration = {
     name     = "petclinic-db-config"
     location = var.region
-    value = yamlencode({
-      spring = {
-        datasource = {
-          username = module.petclinic_data.database_user
-          password = module.petclinic_data.database_password
-        }
-        cloud = {
-          gcp = {
-            sql = {
-              database-name            = module.petclinic_data.database_name
-              instance-connection-name = google_sql_database_instance.shared_database_instance.connection_name
-            }
-          }
-        }
-      }
+    value = jsonencode({
+      INSTANCE_CONNECTION_NAME = google_sql_database_instance.shared_database_instance.connection_name
+      DB_NAME                  = module.petclinic_data.database_name
+      DB_USER                  = module.petclinic_data.database_user
+      DB_PASS                  = module.petclinic_data.database_password
     })
   }
   secret_manager_service_account = local.default_service_account

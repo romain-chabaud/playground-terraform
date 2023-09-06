@@ -20,3 +20,7 @@ resource "google_secret_manager_secret_iam_member" "database_configuration_secre
   member     = "serviceAccount:${var.secret_manager_service_account}"
   depends_on = [google_secret_manager_secret.database_configuration_secret]
 }
+
+data "google_secret_manager_secret_version_access" "secret_version_access" {
+  secret = google_secret_manager_secret_version.database_configuration_secret_value.secret
+}

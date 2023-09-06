@@ -35,24 +35,12 @@ resource "google_cloud_run_v2_service" "voting_app_run_service" {
     containers {
       image = local.deployment.app.voting_app.image
 
-      env {
-        name  = "INSTANCE_CONNECTION_NAME"
-        value = local.deployment.shared_db_instance
-      }
-
-      env {
-        name  = "DB_USER"
-        value = local.deployment.app.voting_app.db.user
-      }
-
-      env {
-        name  = "DB_PASS"
-        value = local.deployment.app.voting_app.db.password
-      }
-
-      env {
-        name  = "DB_NAME"
-        value = local.deployment.app.voting_app.db.name
+      dynamic "env" {
+        for_each = jsondecode(nonsensitive(module.voting_secret.secret_value))
+        content {
+          name  = env.key
+          value = sensitive(env.value)
+        }
       }
 
       volume_mounts {
@@ -98,19 +86,12 @@ resource "google_cloud_run_v2_service" "petclinic_app_run_service" {
         }
       }
 
-      env {
-        name  = "INSTANCE_CONNECTION_NAME"
-        value = local.deployment.shared_db_instance
-      }
-
-      env {
-        name  = "DB_USER"
-        value = local.deployment.app.petclinic.db.user
-      }
-
-      env {
-        name  = "DB_PASS"
-        value = local.deployment.app.petclinic.db.password
+      dynamic "env" {
+        for_each = jsondecode(nonsensitive(module.petclinic_secret.secret_value))
+        content {
+          name  = env.key
+          value = sensitive(env.value)
+        }
       }
     }
   }
