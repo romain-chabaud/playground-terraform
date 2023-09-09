@@ -14,9 +14,5 @@ locals {
 }
 
 locals {
-  default_service_account = "${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-}
-
-locals {
   default_database_port = 5432
 }

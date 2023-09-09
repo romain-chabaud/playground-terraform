@@ -14,13 +14,6 @@ resource "google_secret_manager_secret_version" "database_configuration_secret_v
   secret_data = var.secret_configuration.value
 }
 
-resource "google_secret_manager_secret_iam_member" "database_configuration_secret_access" {
-  secret_id  = google_secret_manager_secret.database_configuration_secret.id
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${var.secret_manager_service_account}"
-  depends_on = [google_secret_manager_secret.database_configuration_secret]
-}
-
 data "google_secret_manager_secret_version_access" "secret_version_access" {
   secret = google_secret_manager_secret_version.database_configuration_secret_value.secret
 }

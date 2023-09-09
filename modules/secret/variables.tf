@@ -7,9 +7,3 @@ variable "secret_configuration" {
   sensitive = true
   nullable  = false
 }
-
-variable "secret_manager_service_account" {
-  type      = string
-  sensitive = true
-  nullable  = false
-}

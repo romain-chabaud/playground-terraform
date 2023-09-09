@@ -16,7 +16,6 @@ module "voting_secret" {
       DB_PASS       = module.voting_data.database_password
     })
   }
-  secret_manager_service_account = local.default_service_account
 
   depends_on = [google_project_service.secret_manager_enabler]
 }
@@ -49,7 +48,6 @@ module "petclinic_secret" {
       POSTGRES_PASS          = module.petclinic_data.database_password
     })
   }
-  secret_manager_service_account = local.default_service_account
 
   depends_on = [google_project_service.secret_manager_enabler]
 }
