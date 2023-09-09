@@ -9,10 +9,11 @@ module "voting_secret" {
     name     = "voting-db-config"
     location = var.region
     value = jsonencode({
-      INSTANCE_CONNECTION_NAME = google_sql_database_instance.shared_database_instance.connection_name
-      DB_NAME                  = module.voting_data.database_name
-      DB_USER                  = module.voting_data.database_user
-      DB_PASS                  = module.voting_data.database_password
+      INSTANCE_HOST = google_sql_database_instance.shared_database_instance.public_ip_address
+      DB_PORT       = local.default_database_port
+      DB_NAME       = module.voting_data.database_name
+      DB_USER       = module.voting_data.database_user
+      DB_PASS       = module.voting_data.database_password
     })
   }
   secret_manager_service_account = local.default_service_account
@@ -42,10 +43,10 @@ module "petclinic_secret" {
     name     = "petclinic-db-config"
     location = var.region
     value = jsonencode({
-      INSTANCE_CONNECTION_NAME = google_sql_database_instance.shared_database_instance.connection_name
-      DB_NAME                  = module.petclinic_data.database_name
-      DB_USER                  = module.petclinic_data.database_user
-      DB_PASS                  = module.petclinic_data.database_password
+      SPRING_PROFILES_ACTIVE = "postgres"
+      POSTGRES_URL           = "jdbc:postgresql://${google_sql_database_instance.shared_database_instance.public_ip_address}:${local.default_database_port}/${module.petclinic_data.database_name}"
+      POSTGRES_USER          = module.petclinic_data.database_user
+      POSTGRES_PASS          = module.petclinic_data.database_password
     })
   }
   secret_manager_service_account = local.default_service_account

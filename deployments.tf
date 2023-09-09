@@ -27,11 +27,16 @@ resource "null_resource" "voting_app_image_creation" {
   depends_on = [google_artifact_registry_repository.voting_repository]
 }
 
+resource "google_service_account" "voting_app_run_service_account" {
+  account_id = "voting-app-run-sa"
+}
+
 resource "google_cloud_run_v2_service" "voting_app_run_service" {
   name     = local.deployment.app.voting_app.name
   location = var.region
 
   template {
+    service_account = google_service_account.voting_app_run_service_account.email
     containers {
       image = local.deployment.app.voting_app.image
 
@@ -41,17 +46,6 @@ resource "google_cloud_run_v2_service" "voting_app_run_service" {
           name  = env.key
           value = sensitive(env.value)
         }
-      }
-
-      volume_mounts {
-        name       = "cloudsql"
-        mount_path = "/cloudsql"
-      }
-    }
-    volumes {
-      name = "cloudsql"
-      cloud_sql_instance {
-        instances = [google_sql_database_instance.shared_database_instance.connection_name]
       }
     }
   }
@@ -72,11 +66,16 @@ resource "google_cloud_run_v2_service_iam_member" "voting_app_run_service_access
 }
 
 # petclinic app
+resource "google_service_account" "petclinic_app_run_service_account" {
+  account_id = "petclinic-app-run-sa"
+}
+
 resource "google_cloud_run_v2_service" "petclinic_app_run_service" {
   name     = local.deployment.app.petclinic.name
   location = var.region
 
   template {
+    service_account = google_service_account.petclinic_app_run_service_account.email
     containers {
       image = local.deployment.app.petclinic.image
 

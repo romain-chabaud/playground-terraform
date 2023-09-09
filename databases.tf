@@ -3,6 +3,12 @@ resource "google_sql_database_instance" "shared_database_instance" {
   database_version = "POSTGRES_14"
   settings {
     tier = "db-f1-micro"
+
+    ip_configuration {
+      authorized_networks {
+        value = var.db_instance_authorized_networks
+      }
+    }
   }
 }
 # voting database
