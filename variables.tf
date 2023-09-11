@@ -6,20 +6,15 @@ variable "region" {
   type = string
 }
 
-variable "db_instance_authorized_networks" {
+variable "database_instance_name" {
   type    = string
-  default = "0.0.0.0/0"
+  default = "shared-database-instance"
 }
 
-variable "voting_db_password_length" {
+variable "voting_database_desired_password_length" {
   type = number
 }
 
-variable "petclinic_db_password_length" {
+variable "petclinic_database_desired_password_length" {
   type = number
-}
-
-variable "min_db_password_length" {
-  type    = number
-  default = 8
 }
